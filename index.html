@@ -1,0 +1,2502 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>re</title>
+
+</head>
+
+<style>
+    @font-face {
+        font-family: 'digital';
+        src: url('font/digital-7.mono.ttf');
+    }
+
+    #gameCanvas {
+        border: 1px solid grey;
+        margin: 0 auto;
+        display: block;
+        margin-top: 40px;
+
+    }
+
+    #secne_swap {
+        cursor: pointer;
+        position: absolute;
+        top: 50px;
+
+    }
+
+    #secne_swap p {
+        background-color: orangered;
+        font-family: sans-serif;
+        color: white;
+        padding: 5px;
+        border-radius: 3px;
+
+    }
+
+    #debug {
+        position: absolute;
+        top: 50px;
+        left: 150px;
+        cursor: pointer;
+    }
+
+    #debug p {
+        background-color: orangered;
+        font-family: sans-serif;
+        color: white;
+        padding: 5px;
+        border-radius: 3px;
+    }
+
+    #getpos {
+        position: absolute;
+        top: 50px;
+        left: 1000px;
+        cursor: pointer;
+    }
+
+    #getpos p {
+        background-color: orangered;
+        font-family: sans-serif;
+        color: white;
+        padding: 5px;
+        border-radius: 3px;
+    }
+
+</style>
+
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Poppins" />
+<script src="js/Inventory.js"></script>
+<script src="js/save.js"></script>
+
+<body>
+    <canvas id="gameCanvas" width="400px" height="600px"></canvas>
+
+</body>
+
+<script>
+    var save = {}; //save variable can't not delete
+    var canvas = document.getElementById("gameCanvas");
+    var ctx = canvas.getContext("2d");
+    var x;
+    var y;
+    var dx;
+    var dy;
+    var eve = false;
+
+
+    canvas.addEventListener("mousemove", function(e) {
+        x = e.clientX - canvas.getBoundingClientRect().left; //x of mouse
+        y = e.clientY - canvas.getBoundingClientRect().top; // y of mouse
+    });
+
+    canvas.addEventListener("click", function(e) {
+        dx = e.clientX - canvas.getBoundingClientRect().left; //x of mouse
+        dy = e.clientY - canvas.getBoundingClientRect().top;
+    });
+
+    canvas.addEventListener("click", function(e) {
+
+        if (gameState.current == gameState.menu) {
+            if (x > canvas.width / 2 - menu.btn.width / 2 && x < canvas.width / 2 - menu.btn.width / 2 +
+                menu
+                .btn.width && y > canvas.height / 2 && y < canvas.height / 2 + menu.btn.height
+            ) { //click the newbtn
+                gameState.current = gameState.game;
+                sence.current = sence.home;
+                map.pos.current = map.pos.home;
+                addItem(0, 1);
+                addItem(5, 1);
+                addItem(10, 1);
+                setInterval(timer_, 600);
+                sound.background.run();
+                save();
+            }
+            if (x > canvas.width / 2 - menu.load_Btn.width / 2 && x < canvas.width / 2 - menu.load_Btn
+                .width / 2 + menu.load_Btn.width && y > canvas.height / 1.5 && y < canvas.height / 1.5 +
+                menu.load_Btn.height) {
+                setInterval(timer_, 600);
+                load();
+                gameState.current = gameState.game;
+                sound.background.run();
+            }
+        }
+        if (gameState.current == gameState.game) { //is the gamestate gaming
+
+            if (ui.check == false && guide.bookOpened == false) {
+                if (clickItem.current == clickItem.bag) {
+                    if (x > canvas.width / 2 + 105 && x < canvas.width / 2 + 105 + home.xIcon.width &&
+                        y >
+                        canvas.height / 2 - 135 && y < canvas.height / 2 - 135 + home.xIcon.height &&
+                        home
+                        .itemInfo == false) {
+                        clickItem.current = clickItem.nothing;
+                        ui.bag_Click = false;
+                    } else {
+                        ItemInfo.Serach();
+                    }
+                    if (home.itemInfo == true) {
+                        if (ItemInfo.banana_Click == true) {
+                            if (x > 180 && x < 220 && y > 480 && y < 500) {
+                                removeItem(4, 1);
+                                bodyStatus.add(1, 13);
+                                bodyStatus.add(3, 7);
+                                bodyStatus.add(0, 9);
+                                bodyStatus.add(2, 7);
+                                sound.eat.stop();
+                                sound.eat.run();
+                                if (hasItem(4) == false) {
+                                    ItemInfo.banana_Click = false;
+                                    home.itemInfo = false;
+
+                                }
+
+                            }
+                        }
+                        if (ItemInfo.snack_Click == true) {
+                            if (x > 180 && x < 220 && y > 480 && y < 500) {
+                                removeItem(10, 1);
+                                bodyStatus.add(1, 22);
+                                bodyStatus.add(3, 17);
+                                bodyStatus.add(2, 17);
+                                sound.eat.stop();
+                                sound.eat.run();
+                                if (hasItem(4) == false) {
+                                    ItemInfo.snack_Click = false;
+                                    home.itemInfo = false;
+
+                                }
+
+                            }
+                        }
+                        if (ItemInfo.fish_Click == true) {
+                            if (x > 180 && x < 220 && y > 480 && y < 500) {
+                                removeItem(3, 1);
+                                bodyStatus.add(1, 17);
+                                bodyStatus.add(3, -7);
+                                bodyStatus.add(2, -10);
+                                sound.eat.stop();
+                                sound.eat.run();
+                                if (hasItem(3) == false) {
+                                    ItemInfo.fish_Click = false;
+                                    home.itemInfo = false;
+
+                                }
+
+                            }
+                        }
+                        if (ItemInfo.water_Skin_Click == true) {
+                            if (x > 180 && x < 220 && y > 480 && y < 500) {
+                                removeItem(5, 1);
+                                bodyStatus.add(0, 21);
+
+                                bodyStatus.add(3, -2);
+                                bodyStatus.add(2, -2);
+                                sound.eat.stop();
+                                sound.drink.run();
+                                if (hasItem(5) == false) {
+                                    ItemInfo.water_Skin_Click = false;
+                                    home.itemInfo = false;
+
+                                }
+
+                            }
+                        }
+                        if (ItemInfo.cocount_Click == true) {
+                            if (x > 180 && x < 220 && y > 480 && y < 500) {
+                                removeItem(6, 1);
+                                bodyStatus.add(0, 13);
+                                bodyStatus.add(1, 19);
+                                bodyStatus.add(2, 14);
+                                bodyStatus.add(3, 9);
+                                sound.eat.stop();
+                                sound.eat.run();
+                                if (hasItem(6) == false) {
+                                    ItemInfo.cocount_Click = false;
+                                    home.itemInfo = false;
+
+                                }
+
+                            }
+                        }
+                    }
+
+                }
+                if (sence.current == sence.home) {
+                    if (clickItem.current == clickItem.nothing) {
+
+                        if (x > 30 && x < 130 && y > 220 && y < 278) { //leave is pressed
+                            if (timer.hour >= 7 && timer.hour <= 17) {
+                                sence.current = sence.map; //sence switch to the map
+                            }
+                        }
+                        if (x > 15 && x < 137 && y > 400 && y < 500) {
+                            clickItem.current = clickItem.tent;
+                        }
+                        if (x > 146 & x < 230 && y > 480 && y < 571) {
+                            clickItem.current = clickItem.fire;
+                            sound.fire_Cracking.run();
+                        }
+                        if (x > 310 && x < 398 && y > 400 && y < 491) {
+                            sound.open_Backpack();
+                            clickItem.current = clickItem.bag;
+
+
+                        }
+                        if (x > 200 && x < 200 + home.highlight.width && y > 280 && y < 280 + home
+                            .highlight
+                            .height) {
+                            addItem(8, 1);
+                            home.takeID = true;
+                        }
+
+                    }
+                    if (clickItem.current == clickItem.fire && home.barFilled == false) {
+                        if (x > canvas.width / 2 + 105 && x < canvas.width / 2 + 105 + home.xIcon
+                            .width && y >
+                            canvas.height / 2 - 135 && y < canvas.height / 2 - 135 + home.xIcon.height
+                        ) {
+                            clickItem.current = clickItem.nothing;
+                            sound.fire_Cracking.stop();
+                        }
+                        if (x > 275 && x < 275 + home.point.width && y > 232 && y < 232 + home.point
+                            .height) {
+                            if (getItemQuantity(2) >= 4 && getItemQuantity(3) >= 1) {
+                                home.cook_Fish = true;
+                                removeItem(2, 4);
+                                removeItem(3, 1);
+
+                            }
+                        }
+                        if (x > 275 && x < 275 + home.point.width && y > 332 && y < 332 + home.point
+                            .height) {
+                            if (getItemQuantity(2) >= 4 && getItemQuantity(5) >= 2) {
+                                home.boil_Water = true;
+                                removeItem(2, 4);
+                                removeItem(5, 2);
+
+                            }
+                        }
+                    }
+                    if (clickItem.current == clickItem.tent && home.barFilled == false) {
+                        if (x > canvas.width / 2 + 105 && x < canvas.width / 2 + 105 + home.xIcon
+                            .width && y >
+                            canvas.height / 2 - 135 && y < canvas.height / 2 - 135 + home.xIcon.height
+                        ) {
+                            clickItem.current = clickItem.nothing;
+                        }
+                        if (x > 275 && x < 275 + home.point.width && y > 232 && y < 232 + home.point
+                            .height) {
+                            home.sleep_1_Hour = true;
+                        }
+                        if (x > 275 && x < 275 + home.point.width && y > 282 && y < 282 + home.point
+                            .height) {
+                            home.sleep_4_Hour = true;
+                        }
+                        if (x > 275 && x < 275 + home.point.width && y > 332 && y < 332 + home.point
+                            .height) {
+                            home.sleep_8_Hour = true;
+                        }
+
+                    }
+
+                    //highlight of home's 
+
+
+
+                }
+                if (sence.current == sence.jungle) {
+                    if (x > 30 && x < 130 && y > 220 && y < 278) {
+                        sence.current = sence.map;
+                    }
+                    if (x > 300 && x < 300 + jungle.point.width && y > 383 && y < 383 + jungle.point
+                        .height) { //gather material
+                        if (jungle.GatherMaterial == false) {
+                            addItem(Math.floor(Math.random() * 2) + 1, Math.floor(Math.random() * 4) +
+                                2);
+                        }
+                        jungle.GatherMaterial = true;
+
+                    }
+                    if (x > 300 && x < 300 + jungle.point.width && y > 431 && y < 431 + jungle.point
+                        .height) { //gather food
+                        if (jungle.GatherFruit == false) {
+                            var temp = 0;
+                            temp = Math.floor(Math.random() * 6);
+                            if (temp < 2) {
+                                addItem(6, 1);
+                            } else {
+                                addItem(4, Math.floor(Math.random() * 2) + 1);
+                            }
+                        }
+                        jungle.GatherFruit = true;
+                    }
+
+                }
+                if (sence.current == sence.river && river.barFilled == false) {
+                    if (x > 30 && x < 130 && y > 220 && y < 278) {
+                        sence.current = sence.map;
+                    }
+
+                    if (x > 300 && x < 300 + river.point.width && y > 383 && y < 383 + river.point
+                        .height) { //fill water
+                        if (river.fill_water == false && getItemQuantity(5) < 8) {
+                            addItem(5, 1);
+                            river.fill_water = true;
+                        }
+
+                    }
+                    if (x > 300 && x < 300 + river.point.width && y > 431 && y < 431 + river.point
+                        .height) { //catch fish
+                        if (river.catch_fish == false) {
+                            addItem(3, 1);
+                        }
+                        river.catch_fish = true;
+                    }
+
+                }
+                if (sence.current == sence.waterfall && waterfall.barFilled == false) {
+                    if (x > 30 && x < 130 && y > 220 && y < 278) {
+                        sence.current = sence.map;
+                    }
+
+                    if (x > 300 && x < 300 + waterfall.point.width && y > 383 && y < 383 + waterfall
+                        .point
+                        .height) { //fill water
+                        if (river.fill_water == false && getItemQuantity(5) < 8) {
+                            addItem(5, 1);
+                            waterfall.fill_Water = true;
+                        }
+
+                    }
+                    if (x > 300 && x < 300 + waterfall.point.width && y > 431 && y < 431 + waterfall
+                        .point
+                        .height) { //catch fish
+
+                        if (waterfall.serach_Time < 4) {
+                            waterfall.serach_Time++;
+                            waterfall.serach_Crew = true;
+                            if (waterfall.serach_Time == 4) {
+                                addItem(9, 1);
+                            }
+                        }
+                    }
+
+                }
+                if (sence.current == sence.crash && crash.barFilled == false) {
+                    if (x > 30 && x < 130 && y > 220 && y < 278) {
+                        sence.current = sence.map;
+                    }
+                    if (x > 300 && x < 300 + crash.point.width && y > 383 && y < 383 + crash.point
+                        .height) { //fill water
+                        if (crash.serach_Time < 4) {
+                            crash.serach_Time++;
+                            crash.serach_Crew = true;
+                            if (crash.serach_Time == 4) {
+                                addItem(7, 1);
+                            }
+                        }
+
+
+
+                    }
+                    if (x > 300 && x < 300 + crash.point.width && y > 431 && y < 431 + crash.point
+                        .height) { //catch fish
+                        if (crash.gatherFood == false) {
+                            var temp = 0;
+                            temp = Math.floor(Math.random() * 4);
+                            if (temp < 1) {
+                                addItem(10, 1);
+                            } else {
+
+                            }
+                        }
+                        crash.gatherFood = true;
+
+                    }
+                }
+                if (sence.current == sence.map && map.des.current == map.des.stop && clickItem
+                    .current ==
+                    clickItem.nothing) { // is sence the map
+                    if (map.pos.current == map.pos.home) {
+                        if (x > loc.home.x && x < loc.home.x + map.home.width && y > loc.home.y && y <
+                            loc.home
+                            .y + map.home.height) {
+                            sence.current = sence.home;
+                        }
+                        if (x > loc.river.x && x < loc.river.x + map.river.width && y > loc.river.y &&
+                            y < loc
+                            .river.y + map.river.height && weather.isRain == false) {
+                            map.des.current = map.des.river;
+                        }
+                        if (x > loc.jungle.x && x < loc.jungle.x + map.jungle.width && y > loc.jungle
+                            .y && y <
+                            loc.jungle.y + map.jungle.height) {
+                            map.des.current = map.des.jungle;
+                        }
+                        if (x > loc.waterfall.x && x < loc.waterfall.x + map.waterfall.width && y > loc
+                            .waterfall.y && y < loc.waterfall.y + map.waterfall.height && weather
+                            .isRain ==
+                            false) {
+                            map.des.current = map.des.waterfall;
+                        }
+                        if (x > loc.crash.x && x < loc.crash.x + map.crash.width && y > loc.crash.y &&
+                            y < loc
+                            .crash.y + map.crash.height) {
+                            map.des.current = map.des.crash;
+                        }
+
+
+                    }
+
+                    if (map.pos.current == map.pos.river) {
+                        if (x > loc.river.x && x < loc.river.x + map.river.width && y > loc.river.y &&
+                            y < loc
+                            .river.y + map.river.height) {
+                            sence.current = sence.river;
+                        }
+                        if (x > loc.home.x && x < loc.home.x + map.home.width && y > loc.home.y && y <
+                            loc.home
+                            .y + map.home.height) {
+                            map.des.current = map.des.home;
+                        }
+                    }
+                    if (map.pos.current == map.pos.jungle) {
+                        if (x > loc.jungle.x && x < loc.jungle.x + map.jungle.width && y > loc.jungle
+                            .y && y <
+                            loc.jungle.y + map.jungle.height) {
+                            sence.current = sence.jungle;
+                        }
+                        if (x > loc.home.x && x < loc.home.x + map.home.width && y > loc.home.y && y <
+                            loc.home
+                            .y + map.home.height) {
+                            map.des.current = map.des.home;
+                        }
+                    }
+                    if (map.pos.current == map.pos.waterfall) {
+                        if (x > loc.waterfall.x && x < loc.waterfall.x + map.waterfall.width && y > loc
+                            .waterfall.y && y < loc.waterfall.y + map.waterfall.height) {
+                            sence.current = sence.waterfall;
+                        }
+                        if (x > loc.home.x && x < loc.home.x + map.home.width && y > loc.home.y && y <
+                            loc.home
+                            .y + map.home.height) {
+                            map.des.current = map.des.home;
+                        }
+                    }
+                    if (map.pos.current == map.pos.crash) {
+                        if (x > loc.crash.x && x < loc.crash.x + map.crash.width && y > loc.crash.y &&
+                            y < loc
+                            .crash.y + map.crash.height) {
+                            sence.current = sence.crash;
+                        }
+                        if (x > loc.home.x && x < loc.home.x + map.home.width && y > loc.home.y && y <
+                            loc.home
+                            .y + map.home.height) {
+                            map.des.current = map.des.home;
+                        }
+                    }
+
+
+                }
+                if (x > 30 && x < 50 && y > 44 && y < 73) {
+                    ui.check = true;
+                }
+                if (x > 25 && x < 60 && y > 136 && y < 173 && ui.check == false && sence.current !=
+                    sence
+                    .home) {
+                    ui.bag_Click = true;
+                }
+            }
+
+            if (ui.check == true) {
+                if (x > 240.5 && x < 272.5 && y > 270.5 && y < 302.5) {
+                    ui.check = false;
+
+                }
+            }
+            if (gameState.current == gameState.game && ui.check == false && clickItem.current ==
+                clickItem
+                .nothing) { //is the gamestate gaming
+
+                if (x > 335 && x < 385 && y > 130 && y < 180) {
+                    guide.bookOpened = true;
+                }
+                if (x > 350 && x < 380 && y > 215 && y < 245) {
+                    guide.bookOpened = false;
+                }
+                if (guide.page > 1)
+                    if (x > 25 && x < 25 + guide.prevPage.width && y > 400 && y < 400 + guide.prevPage
+                        .height) {
+                        guide.page--;
+                        sound.flip_Book();
+                    }
+                if (guide.page < guide.lastPage)
+                    if (x > 350 && x < 350 + guide.nextPage.width * 0.9 && y > 400 && y < 400 + guide
+                        .nextPage
+                        .height * 0.9 && guide.page < 10) {
+                        guide.page++;
+                        sound.flip_Book();
+                    }
+
+            }
+        }
+
+    });
+
+    var gameState = { //game status
+        current: 0,
+        menu: 0,
+        game: 1,
+        end: 2,
+        gameOver: 3
+    };
+
+    var menu = {
+        background: new Image(),
+        btn: new Image(),
+        load_Btn: new Image(),
+        draw: function() {
+
+            this.background.src = "image/background/titlepage.png";
+            this.btn.src = "image/ui/btntest.png";
+            this.load_Btn.src = "image/ui/load.png"
+
+            if (gameState.current == gameState.menu) { //draw the menu
+                ctx.drawImage(this.background, 0, 0, canvas.width, canvas.height);
+                ctx.drawImage(this.btn, canvas.width / 2 - this.btn.width / 2, canvas.height / 2);
+                ctx.drawImage(this.load_Btn, canvas.width / 2 - this.btn.width / 2, canvas.height /
+                    1.5);
+                if (x > canvas.width / 2 - this.btn.width / 2 && x < canvas.width / 2 - this.btn.width /
+                    2 +
+                    this.btn.width && y > canvas.height / 2 && y < canvas.height / 2 + this.btn.height
+                ) {
+                    ctx.drawImage(this.btn, canvas.width / 2 - this.btn.width / 2 - 10, canvas.height /
+                        2 - 3,
+                        this.btn.width * 1.15, this.btn.height * 1.15); //highlight btn
+                    canvas.style.cursor = "pointer";
+                }
+                if (x > canvas.width / 2 - this.load_Btn.width / 2 && x < canvas.width / 2 - this
+                    .load_Btn
+                    .width / 2 +
+                    this.load_Btn.width && y > canvas.height / 1.5 && y < canvas.height / 1.5 + this
+                    .load_Btn
+                    .height) {
+                    ctx.drawImage(this.load_Btn, canvas.width / 2 - this.btn.width / 2 - 10, canvas
+                        .height /
+                        1.5 - 3,
+                        this.load_Btn.width * 1.15, this.btn.height * 1.15); //highlight btn
+                    canvas.style.cursor = "pointer";
+                }
+            }
+        }
+    };
+
+    var clickItem = {
+        current: 0,
+        nothing: 0,
+        fire: 1,
+        tent: 2,
+        bag: 3
+    };
+
+    var loc = { //location of map icon
+        home: {
+            x: 158,
+            y: 425
+        },
+        river: {
+            x: 120,
+            y: 550
+        },
+        jungle: {
+            x: 71,
+            y: 313,
+        },
+        waterfall: {
+            x: 300,
+            y: 260
+        },
+        crash: {
+            x: 220,
+            y: 150,
+        }
+    }
+
+    var home = {
+        background: new Image(),
+        tent: new Image(),
+        fire: new Image(),
+        bag: new Image(),
+        tent_hover: new Image(),
+        fire_hover: new Image(),
+        bag_hover: new Image(),
+        leave: new Image(),
+        leave_hover: new Image(),
+        UI_Background: new Image(),
+        xIcon: new Image(),
+        barW: 0,
+        barFilled: false,
+        sleep_1_Hour: false,
+        sleep_4_Hour: false,
+        sleep_8_Hour: false,
+        cook_Fish: false,
+        boil_Water: false,
+        itemInfo: false,
+        takeID: false,
+        point: new Image(),
+        highlight: new Image(),
+        timebar: function() {
+            if (clickItem.current == clickItem.tent) {
+                if (this.sleep_1_Hour == true) {
+                    if (this.barW < 150) {
+                        this.barFilled = true;
+                        ctx.fillStyle = "rgba(0,0,0,0.6)";
+                        ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, 150, 15);
+                        ctx.fillStyle = "red";
+                        ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, this.barW += 2.5,
+                            15);
+                        setTimeout(timer_, 50);
+                    } else {
+                        this.barFilled = false;
+                        this.sleep_1_Hour = false;
+                        this.barW = 0;
+                    }
+                }
+                if (this.sleep_4_Hour == true) {
+                    if (this.barW < 150) {
+                        this.barFilled = true;
+                        ctx.fillStyle = "rgba(0,0,0,0.6)";
+                        ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, 150, 15);
+                        ctx.fillStyle = "red";
+                        ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, this.barW += 0.625,
+                            15);
+                        bodyStatus.add(3, 0.125);
+                        setTimeout(timer_, 100);
+                    } else {
+                        this.barFilled = false;
+                        this.sleep_4_Hour = false;
+                        this.barW = 0;
+                    }
+                }
+                if (this.sleep_8_Hour == true) {
+                    if (this.barW < 150) {
+                        this.barFilled = true;
+                        ctx.fillStyle = "rgba(0,0,0,0.6)";
+                        ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, 150, 15);
+                        ctx.fillStyle = "red";
+                        ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, this.barW +=
+                            0.3125, 15);
+                        setTimeout(timer_, 100);
+                    } else {
+                        this.barFilled = false;
+                        this.sleep_8_Hour = false;
+                        this.barW = 0;
+                    }
+                }
+            }
+            if (clickItem.current == clickItem.fire) {
+                if (this.cook_Fish == true) {
+                    if (this.barW < 150) {
+                        this.barFilled = true;
+                        ctx.fillStyle = "rgba(0,0,0,0.6)";
+                        ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, 150, 15);
+                        ctx.fillStyle = "red";
+                        ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, this.barW += 2.5,
+                            15);
+                        setTimeout(timer_, 50);
+                    } else {
+                        this.barFilled = false;
+                        this.cook_Fish = false;
+                        this.barW = 0;
+                        bodyStatus.add(1, 59);
+                        bodyStatus.add(2, 61);
+                        bodyStatus.add(3, 41);
+                    }
+                }
+                if (this.boil_Water == true) {
+                    if (this.barW < 150) {
+                        this.barFilled = true;
+                        ctx.fillStyle = "rgba(0,0,0,0.6)";
+                        ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, 150, 15);
+                        ctx.fillStyle = "red";
+                        ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, this.barW += 2.5,
+                            15);
+                        setTimeout(timer_, 50);
+                    } else {
+                        this.barFilled = false;
+                        this.boil_Water = false;
+                        this.barW = 0;
+                        bodyStatus.add(0, 49);
+                        bodyStatus.add(2, 49);
+                        bodyStatus.add(3, 31);
+                    }
+                }
+            }
+
+        },
+        draw: function() {
+            this.background.src = "image/background/home.png";
+            this.tent.src = "image/object/tent.png";
+            this.fire.src = "image/object/fire.png";
+            this.bag.src = "image/object/bag.png";
+            this.leave.src = "image/object/leave.png";
+            this.tent_hover.src = "image/object/tent_hover.png";
+            this.fire_hover.src = "image/object/fire_hover.png";
+            this.bag_hover.src = "image/object/bag_hover.png";
+            this.leave_hover.src = "image/object/leave_hover.png";
+            this.UI_Background.src = "image/ui/paper1.png";
+            this.xIcon.src = "image/ui/x.png";
+            this.point.src = "image/ui/point.png";
+            ctx.drawImage(this.background, 0, 0);
+            if (weather.isRain == true) {
+                weather.background.src = "image/background/rain.png";
+                ctx.drawImage(weather.background, 0, 115);
+            }
+
+
+            ctx.drawImage(this.tent, 15, 410);
+            ctx.drawImage(this.fire, 142, 480);
+            ctx.drawImage(this.bag, 310, 400);
+
+            if (timer.hour >= 18 || timer.hour <= 6) {
+                ctx.fillStyle = "rgba(0,0,0,0.5)";
+                ctx.fillRect(0, 115, 400, 600);
+            }
+            ctx.drawImage(this.leave, 30, 220);
+            if (timer.day >= 4 && this.takeID == false) {
+
+                ctx.drawImage(this.highlight, 200, 280);
+                if (x > 200 && x < 200 + this.highlight.width && y > 280 && y < 280 + this.highlight
+                    .height) {
+                    this.highlight.src = "image/ui/highlight_hover.png";
+                    canvas.style.cursor = "pointer";
+                } else {
+                    this.highlight.src = "image/ui/highlight.png";
+                }
+            }
+            if (ui.check == false && guide.bookOpened == false) {
+                if (clickItem.current == clickItem.nothing) {
+                    if (x > 15 && x < 137 && y > 400 && y < 500) {
+                        ctx.drawImage(this.tent_hover, 15, 410);
+                        canvas.style.cursor = "pointer";
+                    }
+                    if (x > 146 & x < 230 && y > 480 && y < 571) {
+                        ctx.drawImage(this.fire_hover, 142, 480);
+                        canvas.style.cursor = "pointer";
+                    }
+                    if (x > 310 && x < 398 && y > 400 && y < 491) {
+                        ctx.drawImage(this.bag_hover, 310, 400);
+                        canvas.style.cursor = "pointer";
+                    }
+                    if (x > 30 && x < 130 && y > 220 && y < 278) {
+                        ctx.drawImage(this.leave_hover, 30, 220);
+                        canvas.style.cursor = "pointer";
+                    }
+                    if (x > 30 && x < 130 && y > 220 && y < 278) {
+                        if (timer.hour >= 18 || timer.hour <= 6) {
+                            ctx.drawImage(this.UI_Background, 35, 285, this.UI_Background.width * 0.9 +
+                                5, 40);
+                            ctx.font = "15px Poppins";
+                            ctx.fillStyle = "black";
+                            ctx.fillText("At night,you must stay in the tent. ", canvas.width / 2 - 155,
+                                310);
+
+
+                        }
+                    }
+                }
+
+
+            }
+
+            if (clickItem.current == clickItem.fire) {
+                var fuel = new Image();
+                var fish = new Image();
+                var water = new Image();
+                ctx.textAlign = "left";
+                ctx.font = "30px Poppins";
+                ctx.fillStyle = "black";
+                ctx.drawImage(this.UI_Background, canvas.width / 2 - 150, canvas.height / 2 - 150);
+                ctx.fillText('Campfire', canvas.width / 2 - 135, this.UI_Background.height - 210);
+                ctx.drawImage(this.xIcon, canvas.width / 2 + 105, canvas.height / 2 - 135, this.xIcon
+                    .width *
+                    0.6, this.xIcon.height * 0.6);
+                ctx.drawImage(this.point, 275, 232);
+
+                ctx.drawImage(this.point, 275, 332);
+                fuel.src = "image/item/wooden_stick.png";
+                ctx.font = "20px Poppins";
+                ctx.fillStyle = "black";
+                ctx.fillText('Cook Fish      1 hour', 75, 250);
+                ctx.font = "16px Poppins";
+                ctx.fillText('4x', 75, 280);
+
+                fish.src = "image/item/fish.png";
+                ctx.fillText('1x', 155, 280);
+                ctx.drawImage(fuel, 105, 260, 30, 30);
+                ctx.drawImage(fish, 175, 260, 30, 30);
+                ctx.font = "20px Poppins";
+                ctx.fillText('Boil Water     1 hour', 75, 350);
+                ctx.font = "16px Poppins";
+                ctx.fillText('4x', 75, 380);
+
+                water.src = "image/item/water_skin.png";
+                ctx.fillText('2x', 155, 380);
+                ctx.drawImage(fuel, 105, 360, 30, 30);
+                ctx.drawImage(water, 180, 363, 40, 40);
+                if (ui.check == false && this.barFilled == false) {
+                    if (x > canvas.width / 2 + 105 && x < canvas.width / 2 + 105 + this.xIcon.width &&
+                        y >
+                        canvas.height / 2 - 135 && y < canvas.height / 2 - 135 + this.xIcon.height) {
+                        canvas.style.cursor = "pointer";
+                        ctx.drawImage(this.xIcon, canvas.width / 2 + 100, canvas.height / 2 - 142, this
+                            .xIcon
+                            .width * 0.8, this.xIcon.height * 0.8);
+                    }
+                    if (x > 275 && x < 275 + this.point.width && y > 232 && y < 232 + this.point
+                        .height) {
+                        this.point.src = "image/ui/point_hover.png";
+
+                        canvas.style.cursor = "pointer";
+                        ctx.drawImage(this.point, 275, 232);
+                    }
+
+                    if (x > 275 && x < 275 + this.point.width && y > 332 && y < 332 + this.point
+                        .height) {
+                        this.point.src = "image/ui/point_hover.png";
+                        canvas.style.cursor = "pointer";
+                        ctx.drawImage(this.point, 275, 332);
+                    }
+                }
+            }
+            if (clickItem.current == clickItem.tent) {
+                ctx.textAlign = "left";
+                ctx.font = "30px Poppins";
+                ctx.fillStyle = "black";
+                ctx.drawImage(this.UI_Background, canvas.width / 2 - 150, canvas.height / 2 - 150);
+                ctx.fillText('Tent', canvas.width / 2 - 135, this.UI_Background.height - 210);
+                ctx.drawImage(this.xIcon, canvas.width / 2 + 105, canvas.height / 2 - 135, this.xIcon
+                    .width *
+                    0.6, this.xIcon.height * 0.6);
+                ctx.font = "20px Poppins";
+                ctx.fillStyle = "black";
+                ctx.fillText('Sleep     1 Hour', 75, 250);
+                ctx.fillText('Sleep     4 Hour', 75, 300);
+                ctx.fillText('Sleep     8 Hour', 75, 350);
+                ctx.drawImage(this.point, 275, 232);
+                ctx.drawImage(this.point, 275, 282);
+                ctx.drawImage(this.point, 275, 332);
+                if (ui.check == false && this.barFilled == false) {
+                    if (x > canvas.width / 2 + 105 && x < canvas.width / 2 + 105 + this.xIcon.width &&
+                        y >
+                        canvas.height / 2 - 135 && y < canvas.height / 2 - 135 + this.xIcon.height) {
+                        canvas.style.cursor = "pointer";
+                        ctx.drawImage(this.xIcon, canvas.width / 2 + 100, canvas.height / 2 - 142, this
+                            .xIcon
+                            .width * 0.8, this.xIcon.height * 0.8);
+                        canvas.style.cursor = "pointer";
+                    }
+                    if (x > 275 && x < 275 + this.point.width && y > 232 && y < 232 + this.point
+                        .height) {
+                        this.point.src = "image/ui/point_hover.png";
+
+                        canvas.style.cursor = "pointer";
+                        ctx.drawImage(this.point, 275, 232);
+                    }
+                    if (x > 275 && x < 275 + this.point.width && y > 282 && y < 282 + this.point
+                        .height) {
+                        this.point.src = "image/ui/point_hover.png";
+                        canvas.style.cursor = "pointer";
+                        ctx.drawImage(this.point, 275, 282);
+                    }
+                    if (x > 275 && x < 275 + this.point.width && y > 332 && y < 332 + this.point
+                        .height) {
+                        this.point.src = "image/ui/point_hover.png";
+                        canvas.style.cursor = "pointer";
+                        ctx.drawImage(this.point, 275, 332);
+                    }
+                }
+            }
+            if (clickItem.current == clickItem.bag) {
+                ctx.textAlign = "left";
+                ctx.font = "30px Poppins";
+                ctx.fillStyle = "black";
+
+                ctx.drawImage(this.UI_Background, canvas.width / 2 - 150, canvas.height / 2 - 150);
+                ctx.fillText('Bag', canvas.width / 2 - 135, this.UI_Background.height - 210);
+                ctx.drawImage(this.xIcon, canvas.width / 2 + 105, canvas.height / 2 - 135, this.xIcon
+                    .width *
+                    0.6, this.xIcon.height * 0.6);
+
+                if (ui.check == false) {
+                    if (x > canvas.width / 2 + 105 && x < canvas.width / 2 + 105 + this.xIcon.width &&
+                        y >
+                        canvas.height / 2 - 135 && y < canvas.height / 2 - 135 + this.xIcon.height) {
+                        if (this.itemInfo == false) {
+                            ctx.drawImage(this.xIcon, canvas.width / 2 + 100, canvas.height / 2 - 142,
+                                this
+                                .xIcon.width * 0.8, this.xIcon.height * 0.8);
+                            canvas.style.cursor = "pointer";
+                        }
+                    }
+                    Inventory.draw();
+                }
+                if (Inventory.items.length > 0) {
+                    ItemInfo.update();
+
+                }
+            }
+
+            home.timebar();
+
+        }
+    };
+
+    var river = {
+        background: new Image(),
+        leave: new Image(),
+        leave_hover: new Image(),
+        paper: new Image(),
+        point: new Image(),
+        point_hover: new Image(),
+        fill_water: false,
+        catch_fish: false,
+        draw: function() {
+            this.background.src = "image/background/river.png";
+            this.leave.src = "image/object/leave.png";
+            this.leave_hover.src = "image/object/leave_hover.png";
+            this.paper.src = "image/ui/paper.png";
+            this.point.src = "image/ui/point.png";
+            this.point_hover.src = "image/ui/point_hover.png";
+            ctx.textAlign = "left";
+            ctx.font = "20px Poppins";
+            ctx.fillStyle = "black";
+            ctx.drawImage(this.background, 0, 0);
+            if (weather.isRain == true) {
+                weather.background.src = "image/background/rain.png";
+                ctx.drawImage(weather.background, 0, 115);
+            }
+            if (timer.hour >= 18 || timer.hour <= 6) {
+                ctx.save();
+                ctx.fillStyle = "rgba(0,0,0,0.5)";
+                ctx.fillRect(0, 115, 400, 600);
+                ctx.restore();
+            }
+            ctx.drawImage(this.leave, 30, 220);
+            ctx.drawImage(this.paper, canvas.width / 2 - 150, 350);
+
+
+
+            ctx.fillText('Fill Water', canvas.width / 2 - 130, 400);
+            ctx.fillText('30 Mins', canvas.width / 2 + 10, 400);
+            ctx.drawImage(this.point, 300, 383);
+
+
+
+
+
+            ctx.fillText('Catch fish', canvas.width / 2 - 130, 450);
+            ctx.fillText('60 Mins', canvas.width / 2 + 10, 450);
+            ctx.drawImage(this.point, 300, 431);
+
+
+
+
+
+            if (ui.check == false && this.barFilled == false && guide.bookOpened == false) {
+                if (x > 30 && x < 130 && y > 220 && y < 278) {
+                    ctx.drawImage(this.leave_hover, 30, 220);
+                    canvas.style.cursor = "pointer";
+                }
+                if (x > 300 && x < 300 + this.point.width && y > 383 && y < 383 + this.point.height) {
+                    ctx.drawImage(this.point_hover, 300, 383);
+                    canvas.style.cursor = "pointer";
+                }
+
+                if (x > 300 && x < 300 + this.point.width && y > 431 && y < 431 + this.point.height) {
+                    ctx.drawImage(this.point_hover, 300, 431);
+                    canvas.style.cursor = "pointer";
+                }
+            }
+            this.timebar();
+        },
+        barW: 0,
+        barFilled: false,
+        timebar: function() {
+            if (this.fill_water == true) {
+                if (this.barW < 150) {
+                    this.barFilled = true;
+                    ctx.fillStyle = "rgba(0,0,0,0.6)";
+                    ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, 150, 15);
+                    ctx.fillStyle = "red";
+                    ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, this.barW += 5, 15);
+                    setTimeout(timer_, 100);
+                } else {
+                    this.barFilled = false;
+                    this.fill_water = false;
+                    this.barW = 0;
+                }
+            }
+            if (this.catch_fish == true) {
+                if (this.barW < 150) {
+                    this.barFilled = true;
+                    ctx.fillStyle = "rgba(0,0,0,0.6)";
+                    ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, 150, 15);
+                    ctx.fillStyle = "red";
+                    ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, this.barW += 2.5, 15);
+                    setTimeout(timer_, 100);
+                } else {
+                    this.barFilled = false;
+                    this.catch_fish = false;
+                    this.barW = 0;
+                }
+            }
+
+
+        }
+    };
+
+    var jungle = {
+        GatherMaterial: false,
+        GatherFruit: false,
+        background: new Image(),
+        leave: new Image(),
+        leave_hover: new Image(),
+        paper: new Image(),
+        point: new Image(),
+        point_hover: new Image(),
+        draw: function() {
+            this.background.src = "image/background/jungle.png";
+            this.leave.src = "image/object/leave.png";
+            this.leave_hover.src = "image/object/leave_hover.png";
+            this.paper.src = "image/ui/paper.png";
+            this.point.src = "image/ui/point.png";
+            this.point_hover.src = "image/ui/point_hover.png";
+            ctx.textAlign = "left";
+            ctx.font = "20px Poppins";
+            ctx.fillStyle = "black";
+            ctx.drawImage(this.background, 0, 0);
+            if (weather.isRain == true) {
+                weather.background.src = "image/background/rain.png";
+                ctx.drawImage(weather.background, 0, 115);
+            }
+            if (timer.hour >= 18 || timer.hour <= 6) {
+                ctx.save();
+                ctx.fillStyle = "rgba(0,0,0,0.5)";
+                ctx.fillRect(0, 115, 400, 600);
+                ctx.restore();
+            }
+            ctx.drawImage(this.leave, 30, 220);
+            ctx.drawImage(this.paper, canvas.width / 2 - 150, 350);
+
+
+
+            ctx.fillText('Materials', canvas.width / 2 - 130, 400);
+            ctx.fillText('30 Mins', canvas.width / 2 + 10, 400);
+            ctx.drawImage(this.point, 300, 383);
+
+
+
+
+            ctx.fillText('Fruit', canvas.width / 2 - 130, 450);
+            ctx.fillText('60 Mins', canvas.width / 2 + 10, 450);
+            ctx.drawImage(this.point, 300, 431);
+            if (ui.check == false && this.barFilled == false && guide.bookOpened == false) {
+                if (x > 30 && x < 130 && y > 220 && y < 278) {
+                    ctx.drawImage(this.leave_hover, 30, 220);
+                    canvas.style.cursor = "pointer";
+                }
+                if (x > 30 && x < 130 && y > 220 && y < 278) {
+                    ctx.drawImage(this.leave_hover, 30, 220);
+                    canvas.style.cursor = "pointer";
+                }
+                if (x > 300 && x < 300 + this.point.width && y > 383 && y < 383 + this.point.height) {
+                    ctx.drawImage(this.point_hover, 300, 383);
+                    canvas.style.cursor = "pointer";
+                }
+
+                if (x > 300 && x < 300 + this.point.width && y > 431 && y < 431 + this.point.height) {
+                    ctx.drawImage(this.point_hover, 300, 431);
+                    canvas.style.cursor = "pointer";
+
+                }
+            }
+
+            this.timebar();
+
+        },
+        barW: 0,
+        barFilled: false,
+        timebar: function() {
+            if (this.GatherMaterial == true) {
+                if (this.barW < 150) {
+                    this.barFilled = true;
+
+                    ctx.fillStyle = "rgba(0,0,0,0.6)";
+                    ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, 150, 15);
+                    ctx.fillStyle = "red";
+                    ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, this.barW += 5, 15);
+                    setTimeout(timer_, 100);
+                } else {
+                    this.barFilled = false;
+                    this.GatherMaterial = false;
+                    this.barW = 0;
+                }
+            }
+            if (this.GatherFruit == true) {
+                if (this.barW < 150) {
+                    this.barFilled = true;
+                    ctx.fillStyle = "rgba(0,0,0,0.6)";
+                    ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, 150, 15);
+                    ctx.fillStyle = "red";
+                    ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, this.barW += 2.5, 15);
+                    setTimeout(timer_, 100);
+                } else {
+                    this.barFilled = false;
+                    this.GatherFruit = false;
+                    this.barW = 0;
+                }
+            }
+
+
+        }
+    }
+
+    var waterfall = {
+        background: new Image(),
+        leave: new Image(),
+        leave_hover: new Image(),
+        paper: new Image(),
+        point: new Image(),
+        point_hover: new Image(),
+        fill_Water: false,
+        gatherFood: false,
+        serach_Crew: false,
+        draw: function() {
+            this.background.src = "image/background/waterfall.png";
+            this.leave.src = "image/object/leave.png";
+            this.leave_hover.src = "image/object/leave_hover.png";
+            this.paper.src = "image/ui/paper.png";
+            this.point.src = "image/ui/point.png";
+            this.point_hover.src = "image/ui/point_hover.png";
+            ctx.textAlign = "left";
+            ctx.font = "20px Poppins";
+            ctx.fillStyle = "black";
+
+            ctx.drawImage(this.background, 0, 0);
+            if (weather.isRain == true) {
+                weather.background.src = "image/background/rain.png";
+                ctx.drawImage(weather.background, 0, 115);
+            }
+            if (timer.hour >= 18 || timer.hour <= 6) {
+                ctx.save();
+                ctx.fillStyle = "rgba(0,0,0,0.5)";
+                ctx.fillRect(0, 115, 400, 600);
+                ctx.restore();
+            }
+            ctx.drawImage(this.leave, 30, 220);
+            ctx.drawImage(this.paper, canvas.width / 2 - 150, 350);
+
+            ctx.fillText('Fill Water', canvas.width / 2 - 130, 400);
+            ctx.fillText('30 Mins', canvas.width / 2 + 10, 400);
+            ctx.drawImage(this.point, 300, 383);
+
+
+            ctx.fillText('Serach Crew', canvas.width / 2 - 130, 450);
+            ctx.fillText('2 Hours', canvas.width / 2 + 10, 450);
+            ctx.drawImage(this.point, 300, 431);
+
+
+
+
+            if (ui.check == false && this.barFilled == false && guide.bookOpened == false) {
+                if (x > 30 && x < 130 && y > 220 && y < 278) {
+                    ctx.drawImage(this.leave_hover, 30, 220);
+                    canvas.style.cursor = "pointer";
+                }
+                if (x > 30 && x < 130 && y > 220 && y < 278) {
+                    ctx.drawImage(this.leave_hover, 30, 220);
+                    canvas.style.cursor = "pointer";
+                }
+                if (x > 300 && x < 300 + this.point.width && y > 383 && y < 383 + this.point.height) {
+                    ctx.drawImage(this.point_hover, 300, 383);
+                    canvas.style.cursor = "pointer";
+                }
+
+                if (x > 300 && x < 300 + this.point.width && y > 431 && y < 431 + this.point.height) {
+                    ctx.drawImage(this.point_hover, 300, 431);
+                    canvas.style.cursor = "pointer";
+                }
+            }
+            this.timebar();
+
+        },
+        barW: 0,
+        barFilled: false,
+        serach_Time: 0,
+        timebar: function() {
+            if (this.fill_Water == true) {
+                if (this.barW < 150) {
+                    this.barFilled = true;
+                    ctx.fillStyle = "rgba(0,0,0,0.6)";
+                    ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, 150, 15);
+                    ctx.fillStyle = "red";
+                    ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, this.barW += 5, 15);
+                    setTimeout(timer_, 100);
+                } else {
+                    this.barFilled = false;
+                    this.fill_Water = false;
+                    this.barW = 0;
+                }
+            }
+            if (this.serach_Crew == true) {
+                if (this.barW < 150) {
+                    this.barFilled = true;
+                    ctx.fillStyle = "rgba(0,0,0,0.6)";
+                    ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, 150, 15);
+                    ctx.fillStyle = "red";
+                    ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, this.barW += 1.25, 15);
+                    setTimeout(timer_, 100);
+                } else {
+                    this.barFilled = false;
+                    this.serach_Crew = false;
+                    this.barW = 0;
+                }
+            }
+
+
+        }
+    };
+
+    var crash = {
+        background: new Image(),
+        leave: new Image(),
+        leave_hover: new Image(),
+        paper: new Image(),
+        point: new Image(),
+        point_hover: new Image(),
+        barW: 0,
+        barFilled: false,
+        serach_Crew: false,
+        serach_Time: 0,
+
+        draw: function() {
+            this.background.src = "image/background/crash.png";
+            this.leave.src = "image/object/leave.png";
+            this.leave_hover.src = "image/object/leave_hover.png";
+            this.paper.src = "image/ui/paper.png";
+            this.point.src = "image/ui/point.png";
+            this.point_hover.src = "image/ui/point_hover.png";
+            ctx.textAlign = "left";
+            ctx.font = "20px Poppins";
+            ctx.fillStyle = "black";
+
+            ctx.drawImage(this.background, 0, 0);
+            if (weather.isRain == true) {
+                weather.background.src = "image/background/rain.png";
+                ctx.drawImage(weather.background, 0, 115);
+            }
+            if (timer.hour >= 18 || timer.hour <= 6) {
+                ctx.save();
+                ctx.fillStyle = "rgba(0,0,0,0.5)";
+                ctx.fillRect(0, 115, 400, 600);
+                ctx.restore();
+            }
+            ctx.drawImage(this.leave, 30, 220);
+            ctx.drawImage(this.paper, canvas.width / 2 - 150, 350);
+
+            ctx.fillText('Serach Crew', canvas.width / 2 - 130, 400);
+            ctx.fillText('2 Hours', canvas.width / 2 + 10, 400);
+            ctx.drawImage(this.point, 300, 383);
+
+
+            ctx.fillText('Food', canvas.width / 2 - 130, 450);
+            ctx.fillText('60 Mins', canvas.width / 2 + 10, 450);
+            ctx.drawImage(this.point, 300, 431);
+            if (ui.check == false && this.barFilled == false && guide.bookOpened == false) {
+                if (x > 30 && x < 130 && y > 220 && y < 278) {
+                    ctx.drawImage(this.leave_hover, 30, 220);
+                    canvas.style.cursor = "pointer";
+                }
+                if (x > 30 && x < 130 && y > 220 && y < 278) {
+                    ctx.drawImage(this.leave_hover, 30, 220);
+                    canvas.style.cursor = "pointer";
+                }
+                if (x > 300 && x < 300 + this.point.width && y > 383 && y < 383 + this.point.height) {
+                    ctx.drawImage(this.point_hover, 300, 383);
+                    canvas.style.cursor = "pointer";
+                }
+
+                if (x > 300 && x < 300 + this.point.width && y > 431 && y < 431 + this.point.height) {
+                    ctx.drawImage(this.point_hover, 300, 431);
+                    canvas.style.cursor = "pointer";
+
+                }
+            }
+            this.timebar();
+        },
+        timebar: function() {
+            if (this.serach_Crew == true) {
+                if (this.barW < 150) {
+                    this.barFilled = true;
+                    ctx.fillStyle = "rgba(0,0,0,0.6)";
+                    ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, 150, 15);
+                    ctx.fillStyle = "red";
+                    ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, this.barW += 1.25, 15);
+                    setTimeout(timer_, 100);
+                } else {
+                    this.barFilled = false;
+                    this.serach_Crew = false;
+                    this.barW = 0;
+                }
+            }
+            if (this.gatherFood == true) {
+                if (this.barW < 150) {
+                    this.barFilled = true;
+                    ctx.fillStyle = "rgba(0,0,0,0.6)";
+                    ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, 150, 15);
+                    ctx.fillStyle = "red";
+                    ctx.fillRect(canvas.width / 2 - 75, canvas.height / 2 + 200, this.barW += 2.5, 15);
+                    setTimeout(timer_, 100);
+                } else {
+                    this.barFilled = false;
+                    this.gatherFood = false;
+                    this.barW = 0;
+                }
+            }
+        }
+    }
+
+    var sence = {
+        current: 0,
+        home: 0,
+        map: 1,
+        river: 2,
+        jungle: 3,
+        waterfall: 4,
+        draw: function() {
+            if (gameState.current == gameState.game) {
+                if (this.current == this.home) {
+                    home.draw();
+                }
+                if (this.current == this.map) {
+                    map.draw();
+                }
+                if (this.current == this.river) {
+
+                    river.draw();
+                }
+                if (this.current == this.jungle) {
+                    jungle.draw();
+                }
+                if (this.current == this.waterfall) {
+                    waterfall.draw();
+                }
+                if (this.current == this.crash) {
+                    crash.draw();
+                }
+            }
+        }
+    };
+
+    var dot = {
+        x: loc.home.x + 10.5,
+        y: loc.home.y + 10.5
+    }
+
+    var map = {
+        ismove: false,
+        des: {
+            current: 0,
+            stop: 0,
+            home: 1,
+            river: 2,
+            jungle: 3,
+            waterfall: 4,
+            crash: 5
+        },
+
+        pos: {
+            current: 0,
+            home: 1,
+            river: 2,
+            jungle: 3,
+            waterfall: 4,
+            crash: 5
+        },
+        background: new Image(),
+        home: new Image(),
+        river: new Image(),
+        jungle: new Image(),
+        waterfall: new Image(),
+        crash: new Image(),
+        dot: new Image(),
+        move: function() {
+            if (sence.current == sence.map && guide.bookOpened == false) {
+
+                if (this.pos.current == this.pos.home && this.des.current != this.des.stop) {
+
+                    if (this.des.current == this.des.river) {
+                        dot.x -= 0.3;
+                        dot.y += 1;
+                        setTimeout(timer_, 100);
+                        if (dot.x < 134 && dot.y > 558) {
+                            sence.current = sence.river;
+                            this.des.current = this.des.stop;
+                            this.pos.current = this.pos.river;
+                        }
+                    }
+                    if (this.des.current == this.des.jungle) {
+                        dot.x -= 0.63;
+                        dot.y -= 0.8;
+                        setTimeout(timer_, 100);
+                        if (dot.x < 82 && dot.y < 325) {
+                            sence.current = sence.jungle;
+                            this.des.current = this.des.stop;
+                            this.pos.current = this.pos.jungle;
+                        }
+                    }
+                    if (this.des.current == this.des.waterfall) {
+                        dot.x += 0.85;
+                        dot.y -= 1;
+                        setTimeout(timer_, 100);
+                        if (dot.x >= 310 && dot.y <= 270) {
+                            sence.current = sence.waterfall;
+                            this.des.current = this.des.stop;
+                            this.pos.current = this.pos.waterfall;
+                        }
+                    }
+                    if (this.des.current == this.des.crash) {
+                        dot.x += 0.3;
+                        dot.y -= 1.3;
+                        setTimeout(timer_, 100);
+                        if (dot.x >= 232 && dot.y <= 160) {
+                            sence.current = sence.crash;
+                            this.des.current = this.des.stop;
+                            this.pos.current = this.pos.crash;
+                        }
+                    }
+                }
+                if (this.pos.current == this.pos.river) {
+                    if (this.des.current == this.des.home) {
+                        dot.x += 0.3;
+                        dot.y -= 1;
+                        setTimeout(timer_, 100);
+                        if (dot.x > 168 && dot.y < 437) {
+                            sence.current = sence.home;
+                            this.des.current = this.des.stop;
+                            this.pos.current = this.pos.home;
+                        }
+                    }
+                }
+                if (this.pos.current == this.pos.jungle) {
+                    if (this.des.current == this.des.home) {
+                        dot.x += 0.63;
+                        dot.y += 0.8;
+                        setTimeout(timer_, 100);
+                        if (dot.x > 167 && dot.y > 434) {
+                            sence.current = sence.home;
+                            this.des.current = this.des.stop;
+                            this.pos.current = this.pos.home;
+                        }
+                    }
+                }
+                if (this.pos.current == this.pos.waterfall) {
+                    if (this.des.current == this.des.home) {
+                        dot.x -= 0.85;
+                        dot.y += 1;
+                        setTimeout(timer_, 100);
+                        if (dot.x < 168 && dot.y > 437) {
+                            sence.current = sence.home;
+                            this.des.current = this.des.stop;
+                            this.pos.current = this.pos.home;
+                        }
+                    }
+                }
+                if (this.pos.current == this.pos.crash) {
+                    if (this.des.current == this.des.home) {
+                        dot.x -= 0.3;
+                        dot.y += 1.3;
+                        setTimeout(timer_, 100);
+                        if (dot.x < 168 && dot.y > 437) {
+                            sence.current = sence.home;
+                            this.des.current = this.des.stop;
+                            this.pos.current = this.pos.home;
+                        }
+                    }
+                }
+            }
+
+
+        },
+        draw: function() {
+            if (gameState.current == gameState.game && sence.current == sence.map) {
+                this.background.src = "image/background/map.png";
+                this.dot.src = "image/map/reddot.png";
+                this.home.src = "image/map/home.png";
+                this.river.src = "image/map/river.png";
+                this.jungle.src = "image/map/jungle.png";
+                this.waterfall.src = "image/map/waterfall.png";
+                this.crash.src = "image/map/crash.png"
+                ctx.drawImage(this.background, 0, 0);
+                if (weather.isRain == true) {
+                    weather.background.src = "image/background/rain.png";
+                    ctx.drawImage(weather.background, 0, 115);
+                }
+                if (timer.hour >= 18 || timer.hour <= 6) {
+                    ctx.save();
+                    ctx.fillStyle = "rgba(0,0,0,0.5)";
+                    ctx.fillRect(0, 115, 400, 600);
+                    ctx.restore();
+                }
+                ctx.drawImage(this.home, loc.home.x, loc.home.y);
+                if (weather.isRain == false)
+                    ctx.drawImage(this.river, loc.river.x, loc.river.y);
+                ctx.drawImage(this.jungle, loc.jungle.x, loc.jungle.y);
+                if (weather.isRain == false)
+                    ctx.drawImage(this.waterfall, loc.waterfall.x, loc.waterfall.y);
+
+                ctx.drawImage(this.crash, loc.crash.x, loc.crash.y);
+                if (ui.check == false && guide.bookOpened == false && clickItem.current == clickItem
+                    .nothing) {
+                    if (x > loc.home.x && x < loc.home.x + this.home.width && y > loc.home.y && y < loc
+                        .home.y +
+                        this.home.height) {
+                        ctx.drawImage(this.home, loc.home.x - 3, loc.home.y - 4, map.home.width * 1.2,
+                            this.home
+                            .height * 1.2);
+                        canvas.style.cursor = "pointer";
+                        ctx.fillStyle = "black";
+                        ctx.fillRect(0, 570, 72, 30);
+                        ctx.fillStyle = "white";
+                        ctx.fillText("Home", 7, 592);
+                    }
+                    if (x > loc.river.x && x < loc.river.x + this.river.width && y > loc.river.y && y <
+                        loc
+                        .river.y + this.river.height && weather.isRain == false) {
+                        ctx.drawImage(this.river, loc.river.x - 3, loc.river.y - 4, this.river.width *
+                            1.2, this
+                            .river.height * 1.2);
+                        canvas.style.cursor = "pointer";
+                        ctx.fillStyle = "black";
+                        ctx.fillRect(0, 570, 62, 30);
+                        ctx.fillStyle = "white";
+
+                        ctx.fillText("River", 7, 592);
+
+                    }
+                    if (x > loc.jungle.x && x < loc.jungle.x + this.jungle.width && y > loc.jungle.y &&
+                        y < loc
+                        .jungle.y + this.jungle.height) {
+                        ctx.drawImage(this.jungle, loc.jungle.x - 3, loc.jungle.y - 4, this.jungle
+                            .width * 1.2,
+                            this.jungle.height * 1.2);
+                        canvas.style.cursor = "pointer";
+                        ctx.fillStyle = "black";
+                        ctx.fillRect(0, 570, 80, 30);
+                        ctx.fillStyle = "white";
+                        ctx.fillText("Jungle", 7, 592);
+                    }
+                    if (x > loc.waterfall.x && x < loc.waterfall.x + this.waterfall.width && y > loc
+                        .waterfall
+                        .y && y < loc.waterfall.y + this.waterfall.height && weather.isRain == false) {
+                        ctx.drawImage(this.waterfall, loc.waterfall.x - 3, loc.waterfall.y - 4, this
+                            .waterfall
+                            .width * 1.2, this.waterfall.height * 1.2);
+                        canvas.style.cursor = "pointer";
+                        ctx.fillStyle = "black";
+                        ctx.fillRect(0, 570, 108, 30);
+                        ctx.fillStyle = "white";
+                        ctx.fillText("WaterFall", 7, 592);
+                    }
+                    if (x > loc.crash.x && x < loc.crash.x + this.crash.width && y > loc.crash.y && y <
+                        loc
+                        .crash.y + this.crash.height) {
+                        ctx.drawImage(this.crash, loc.crash.x - 3, loc.crash.y - 4, this.crash.width *
+                            1.2, this
+                            .crash.height * 1.2);
+                        canvas.style.cursor = "pointer";
+                        ctx.fillStyle = "black";
+                        ctx.fillRect(0, 570, 75, 30);
+                        ctx.fillStyle = "white";
+                        ctx.fillText("Crash", 7, 592);
+                    }
+                }
+                ctx.drawImage(this.dot, dot.x, dot.y);
+                this.move();
+            }
+
+        }
+
+    };
+
+    var bodyStatus = {
+        value: {
+            thirsty: 100,
+            hunger: 100,
+            mentality: 100,
+            health: 100,
+        },
+        add: function(id, value) {
+
+            if (id == 0) {
+                if (value > 0) {
+                    if (this.value.thirsty + value < 100) {
+                        this.value.thirsty += value;
+                    } else {
+                        this.value.thirsty = 100;
+                    }
+                }
+                if (value < 0) {
+                    if (this.value.thirsty + value > 0) {
+                        this.value.thirsty += value;
+                    } else {
+                        this.value.thirsty = 0;
+                    }
+                }
+
+            }
+            if (id == 1) {
+                if (value > 0) {
+                    if (this.value.hunger + value < 100) {
+                        this.value.hunger += value;
+                    } else {
+                        this.value.hunger = 100;
+                    }
+                }
+                if (value < 0) {
+                    if (this.value.hunger + value > 0) {
+                        this.value.hunger += value;
+                    } else {
+                        this.value.hunger = 0;
+                    }
+                }
+
+            }
+            if (id == 2) {
+                if (value > 0) {
+                    if (this.value.mentality + value < 100) {
+                        this.value.mentality += value;
+                    } else {
+                        this.value.mentality = 100;
+                    }
+                }
+                if (value < 0) {
+                    if (this.value.mentality + value > 0) {
+                        this.value.mentality += value;
+                    } else {
+                        this.value.mentality = 0;
+                    }
+                }
+
+            }
+            if (id == 3) {
+                if (value > 0) {
+                    if (this.value.health + value < 100) {
+                        this.value.health += value;
+                    } else {
+                        this.value.health = 100;
+                    }
+                }
+                if (value < 0) {
+                    if (this.value.health + value > 0) {
+                        this.value.health += value;
+                    } else {
+                        this.value.health = 0;
+                    }
+                }
+
+            }
+        },
+        draw: function() {
+            ctx.textAlign = "left";
+            ctx.font = "20px Poppins";
+            ctx.fillStyle = "white";
+            ctx.fillText(Math.floor(this.value.thirsty), 120, 65);
+            ctx.fillText(Math.floor(this.value.hunger), 200, 65);
+            ctx.fillText(Math.floor(this.value.mentality), 285, 65);
+            ctx.fillText(Math.floor(this.value.health), 365, 65);
+
+        },
+        calculate: function() {
+
+            if (timer.min % 9 == 0) {
+                if (bodyStatus.value.mentality > 79) {
+
+                    bodyStatus.add(1, -0.2);
+                } else if (bodyStatus.value.mentality < 79 && bodyStatus.value.mentality > 29) {
+
+                    bodyStatus.add(1, -0.4);
+                } else if (bodyStatus.value.mentality < 29) {
+
+                    bodyStatus.add(1, -0.8);
+                }
+
+            }
+            if (timer.min % 6 == 0) {
+                if (bodyStatus.value.mentality > 79) {
+
+                    bodyStatus.add(0, -0.3);
+                } else if (bodyStatus.value.mentality < 79 && bodyStatus.value.mentality > 29) {
+
+                    bodyStatus.add(0, -0.5);
+                } else if (bodyStatus.value.mentality < 29) {
+
+                    bodyStatus.add(0, -0.75);
+                }
+            }
+            if (bodyStatus.value.thirsty < 88 && bodyStatus.value.thirsty > 58) {
+                if (timer.min % 30 == 0) {
+                    bodyStatus.add(3, -0.5);
+                }
+                if (timer.min % 15 == 0) {
+                    bodyStatus.add(2, -0.25);
+                }
+            } else if (bodyStatus.value.thirsty < 58 && bodyStatus.value.thirsty > 38) {
+                if (timer.min % 30 == 0) {
+                    bodyStatus.add(3, -1.5);
+                }
+                if (timer.min % 15 == 0) {
+                    bodyStatus.add(2, -0.3);
+                }
+            } else if (bodyStatus.value.thirsty < 38) {
+                if (timer.min % 30 == 0) {
+                    bodyStatus.add(3, -2);
+                }
+                if (timer.min % 15 == 0) {
+                    bodyStatus.add(2, -0.75);
+                }
+            }
+            if (bodyStatus.value.hunger < 78 && bodyStatus.value.hunger > 48) {
+                if (timer.min % 30 == 0) {
+                    bodyStatus.add(3, -0.25);
+                }
+                if (timer.min % 15 == 0) {
+                    bodyStatus.add(2, -0.5);
+                }
+            } else if (bodyStatus.value.hunger < 48 && bodyStatus.value.hunger > 28) {
+                if (timer.min % 30 == 0) {
+                    bodyStatus.add(3, -0.5);
+                }
+                if (timer.min % 15 == 0) {
+                    bodyStatus.add(2, -0.75);
+                }
+            } else if (bodyStatus.value.hunger < 28) {
+                if (timer.min % 30 == 0) {
+                    bodyStatus.add(3, -1);
+                }
+                if (timer.min % 15 == 0) {
+                    bodyStatus.add(2, -1.5);
+                }
+            }
+            if (bodyStatus.value.hunger < 5 && bodyStatus.value.thirsty < 5) {
+                if (timer.min % 30 == 0) {
+                    bodyStatus.add(3, -10);
+                }
+                if (timer.min % 15 == 0) {
+                    bodyStatus.add(2, -10);
+                }
+            }
+
+            if (timer.min % 44 == 0) {
+                if (weather.isRain) {
+                    bodyStatus.add(2, -2);
+                }
+            }
+
+            if (this.value.health == 0) {
+                gameState.current = gameState.gameOver;
+                ctx.fillStyle = "black";
+                ctx.fillRect(0, 0, 400, 600);
+                ctx.font = "50px Poppins";
+                ctx.fillStyle = "white";
+                ctx.textAlign = "center";
+                ctx.fillText('You Die', 200, 300);
+            }
+        }
+    };
+
+    var weather = {
+        background: new Image(),
+        isRain: false,
+        cal: function() {
+            if (timer.day == 4 || timer.day == 6) {
+                this.isRain = true;
+                sound.rain.run();
+            } else {
+                this.isRain = false;
+                sound.rain.stop();
+                sound.rain.playSound = false;
+            }
+
+
+
+
+        }
+
+    };
+
+    var timer = {
+        hour: 7,
+        min: 10,
+        day: 2,
+        cal: function() {
+            ctx.font = "50px digital";
+            ctx.fillStyle = "#07e2cc";
+            ctx.textAlign = "center";
+
+            if (this.hour < 10) {
+                if (this.min < 10)
+                    ctx.fillText('0' + this.hour + ':0' + this.min, watch.x + 89, watch.y + 170);
+                if (timer.min >= 10)
+                    ctx.fillText('0' + this.hour + ':' + this.min, watch.x + 89, watch.y + 170);
+            } else if (this.hour >= 10 && this.hour < 20) {
+                if (timer.min < 10)
+                    ctx.fillText(this.hour + ':0' + this.min, watch.x + 84, watch.y + 170);
+                if (timer.min >= 10)
+                    ctx.fillText(this.hour + ':' + this.min, watch.x + 84, watch.y + 170);
+            } else {
+                if (timer.min < 10)
+                    ctx.fillText(this.hour + ':0' + this.min, watch.x + 90, watch.y + 170);
+                if (timer.min >= 10)
+                    ctx.fillText(this.hour + ':' + this.min, watch.x + 90, watch.y + 170);
+
+            }
+        },
+        draw: function() {
+            ctx.textAlign = "center";
+            ctx.font = "35px digital";
+            ctx.fillStyle = "#07e2cc";
+            ctx.fillText('7-' + this.day + '', watch.x + 50, watch.y + 230);
+            this.cal();
+
+        }
+    };
+
+    var watch = {
+        background: new Image(),
+        close: new Image(),
+        sun: new Image(),
+        moon: new Image(),
+        rain: new Image(),
+        tri: new Image(),
+        x: canvas.width / 2 - 87.5,
+        y: canvas.height / 2 - 109.5,
+        draw: function() {
+            this.background.src = "image/ui/watch.png";
+            this.close.src = "image/ui/close.png";
+            this.sun.src = "image/ui/sun.png";
+            this.moon.src = "image/ui/moon.png";
+            this.tri.src = "image/ui/tri.png";
+            this.rain.src = "image/ui/rain.png";
+            ctx.drawImage(this.background, this.x, this.y);
+            ctx.drawImage(this.close, this.x + 128, this.y + 80);
+            if (x > 240.5 && x < 272.5 && y > 270.5 && y < 302.5) {
+                ctx.drawImage(this.close, this.x + 126, this.y + 78, this.close.height * 1.15, this
+                    .close
+                    .height * 1.15);
+                canvas.style.cursor = "pointer";
+            }
+            if (timer.hour >= 18 || timer.hour <= 6) {
+                ctx.drawImage(this.tri, this.x + 135, this.y + 190);
+            } else
+                ctx.drawImage(this.tri, this.x + 101, this.y + 190);
+            ctx.drawImage(this.sun, this.x + 90, this.y + 200);
+            ctx.drawImage(this.moon, this.x + 130, this.y + 203);
+            if (weather.isRain == true) {
+                ctx.drawImage(this.rain, this.x + 40, this.y + 90);
+            }
+
+        }
+    }
+
+    var ui = {
+        check: false,
+        bag_Click: false,
+        watch_icon: new Image(),
+        water: new Image(),
+        water_hover: new Image(),
+        hp: new Image(),
+        hunger: new Image(),
+        hunger_hover: new Image(),
+        mind: new Image(),
+        mind_hover: new Image(),
+        health: new Image(),
+        health_hover: new Image(),
+        watch: new Image(),
+        book: new Image(),
+        bag: new Image(),
+        draw: function() {
+            if (gameState.current == gameState.game) {
+                this.watch_icon.src = "image/ui/watch_icon.png";
+                this.water.src = "image/ui/water.png";
+                this.mind.src = "image/ui/mind.png";
+                this.hp.src = "image/ui/hp.png";
+                this.hunger.src = "image/ui/hunger.png";
+                this.health.src = "image/ui/health.png";
+                this.book.src = "image/ui/book-1.png";
+                this.health_hover.src = "image/ui/health_hover.png";
+                this.mind_hover.src = "image/ui/mind_hover.png";
+                this.hunger_hover.src = "image/ui/hunger_hover.png";
+                this.water_hover.src = "image/ui/water_hover.png";
+                this.bag.src = "image/ui/backpack.png";
+                ctx.drawImage(this.watch_icon, 30, 44);
+                ctx.drawImage(this.water, 88, 46);
+                ctx.drawImage(this.hunger, 167, 46);
+                ctx.drawImage(this.mind, 250, 45);
+                ctx.drawImage(this.health, 335, 46);
+                if (sence.current != sence.home)
+                    ctx.drawImage(this.bag, 25, 136);
+                bodyStatus.draw();
+                if (guide.bookOpened == false) {
+                    if (x > 30 && x < 50 && y > 44 && y < 73) {
+                        ctx.drawImage(this.watch_icon, 27.5, 42, this.watch_icon.width * 1.15, this
+                            .watch_icon
+                            .height * 1.15);
+                        canvas.style.cursor = "pointer";
+                    }
+
+                    if (x > 30 && x < 50 && y > 44 && y < 73) {
+                        ctx.fillStyle = "black";
+                        ctx.fillRect(35, 75, 75, 28);
+                        ctx.fillStyle = "white";
+                        ctx.fillText("Watch", 40, 95);
+                        ctx.drawImage(ui.watch_icon, 27.5, 42, this.watch_icon.width * 1.15, this
+                            .watch_icon
+                            .height * 1.15);
+                    }
+
+                    if (x > 88 && x < 113 && y > 46 && y < 71) {
+                        ctx.fillStyle = "black";
+                        ctx.fillRect(90, 75, 65, 28);
+                        ctx.fillStyle = "white";
+                        ctx.fillText("Thirst", 95, 95);
+                        ctx.drawImage(this.water_hover, 88, 46);
+                        canvas.style.cursor = "pointer";
+                    }
+                    if (x > 167 && x < 192 && y > 46 && y < 71) {
+                        ctx.fillStyle = "black";
+                        ctx.fillRect(175, 75, 80, 28);
+                        ctx.fillStyle = "white";
+                        ctx.fillText("Hunger", 179, 95);
+                        ctx.drawImage(this.hunger_hover, 167, 46);
+                        canvas.style.cursor = "pointer";
+                    }
+                    if (x > 250 && x < 275 && y > 46 && y < 71) {
+                        ctx.fillStyle = "black";
+                        ctx.fillRect(255, 75, 105, 28);
+                        ctx.fillStyle = "white";
+                        ctx.fillText("Mentality", 262, 95);
+                        ctx.drawImage(this.mind_hover, 250, 45);
+                        canvas.style.cursor = "pointer";
+                    }
+                    if (x > 335 && x < 360 && y > 46 && y < 71) {
+                        ctx.fillStyle = "black";
+                        ctx.fillRect(325, 75, 100, 28);
+                        ctx.fillStyle = "white"
+                        ctx.fillText("Health", 332, 95);
+                        ctx.drawImage(this.health_hover, 335, 46);
+                        canvas.style.cursor = "pointer";
+                    }
+                    if (x > 25 && x < 60 && y > 136 && y < 173 && sence.current != sence.home) {
+                        this.bag.src = "image/ui/backpack_hover.png";
+                        ctx.drawImage(this.bag, 25, 136);
+                        canvas.style.cursor = "pointer";
+                        ctx.fillStyle = "black";
+                        ctx.fillRect(67, 136, 110, 28);
+                        ctx.fillStyle = "white"
+                        ctx.fillText("Backpack", 73, 156);
+                    }
+                }
+                if (this.check == true) {
+                    watch.draw();
+                    timer.draw();
+                }
+                if (this.bag_Click == true) {
+                    clickItem.current = clickItem.bag;
+                    // sound.open_Backpack();
+                }
+                if (this.check == false && clickItem.current == clickItem.nothing) {
+                    ctx.drawImage(this.book, 335, 130);
+                    if (x > 335 && x < 335 + this.book.width && y > 130 && y < 130 + this.book.height) {
+                        ctx.drawImage(this.book, 332, 125, this.book.width * 1.15, this.book.height *
+                            1.15);
+                        canvas.style.cursor = "pointer";
+                    }
+                }
+                guide.draw();
+            }
+        }
+    }
+
+    var guide = {
+        bookOpened: false,
+        has_Sos: false,
+        close: new Image(),
+        paper: new Image(),
+        man_1: new Image(),
+        man_2: new Image(),
+        man_3: new Image(),
+        nextPage: new Image(),
+        prevPage: new Image(),
+        page: 1,
+        man_1_con: 'Unknown',
+        man_2_con: 'Unknown',
+        man_3_con: 'Unknown',
+        lastPage: 4,
+        goal_Text: ['Where is my crew,', 'They might be near.', 'Well, They all died.', 'I have to made a',
+            'SOS signal.'
+        ],
+        hint_Text: ['Find all members', 'Need 50 sticks and rocks', 'to made a SOS singnal.'],
+
+        draw: function() {
+            this.paper.src = "image/background/paper.png";
+            this.close.src = "image/ui/x1.png";
+            this.man_1.src = "image/todo/man1.jpg";
+            this.man_2.src = "image/todo/man2.jpg";
+            this.man_3.src = "image/todo/man3.jpg";
+            this.nextPage.src = "image/ui/point.png";
+            this.prevPage.src = "image/ui/prev.png"
+            if (this.bookOpened == true) {
+                if (hasItem(7) && hasItem(8) && hasItem(9)) {
+                    this.lastPage = 5;
+                }
+                ctx.drawImage(this.paper, 5, 200);
+                ctx.drawImage(this.close, 350, 215);
+                if (this.page > 1) {
+                    ctx.drawImage(this.prevPage, 25, 400);
+                    if (x > 25 && x < 25 + this.prevPage.width && y > 400 && y < 400 + this.prevPage
+                        .height) {
+                        this.prevPage.src = "image/ui/prev_hover.png";
+                        canvas.style.cursor = "pointer";
+                        ctx.drawImage(this.prevPage, 25, 400);
+                    }
+                }
+                if (this.page < this.lastPage) {
+                    ctx.drawImage(this.nextPage, 350, 400, this.nextPage.width * 0.9, this.nextPage
+                        .height *
+                        0.9);
+                    if (x > 350 && x < 350 + this.nextPage.width * 0.9 && y > 400 && y < 400 + this
+                        .nextPage
+                        .height * 0.9 && this.page > 0 && this.page < 10) {
+                        this.nextPage.src = "image/ui/point_hover.png";
+                        canvas.style.cursor = "pointer";
+                        ctx.drawImage(this.nextPage, 350, 400, this.nextPage.width * 0.9, this.nextPage
+                            .height *
+                            0.9);
+                    }
+                }
+
+
+                if (x > 350 && x < 350 + this.close.width && y > 215 && y < 215 + this.close.height) {
+                    ctx.drawImage(this.close, 347.5, 212, this.close.width * 1.15, this.close.height *
+                        1.15);
+                    canvas.style.cursor = "pointer";
+                }
+
+
+                ctx.fillStyle = "black"
+                ctx.fillRect(165, 175, 70, 25);
+                ctx.textAlign = "left";
+                ctx.font = "15px Poppins";
+                ctx.fillText(this.page, 20, 225);
+                ctx.font = "20px Poppins";
+                ctx.fillStyle = "white";
+                ctx.fillText('Guide', 170, 195);
+                if (this.page == 1) {
+                    ctx.fillStyle = "black";
+                    ctx.font = "16px Poppins";
+                    ctx.fillText('Goals:', 27, 260);
+                    if (hasItem(7) && hasItem(8) && hasItem(9) == true && this.has_Sos == false) {
+                        ctx.fillText(this.goal_Text[2], 30, 295);
+                        ctx.fillText(this.goal_Text[3], 30, 315);
+                        ctx.fillText(this.goal_Text[4], 30, 335);
+                    } else if (this.has_Sos == true && hasItem(7) && hasItem(8) && hasItem(9)) {
+                        ctx.font = "14px Poppins";
+                        ctx.fillText('I have built the signal,', 30, 295);
+                        ctx.fillText('just wait for few days.', 30, 315);
+                    } else {
+                        ctx.fillText(this.goal_Text[0], 30, 300);
+                        ctx.fillText(this.goal_Text[1], 30, 320);
+                    }
+                    ctx.fillText('Hint:', 27, 360);
+                    if (hasItem(7) && hasItem(8) && hasItem(9) == true && this.has_Sos == false) {
+                        ctx.font = "14px Poppins";
+                        ctx.fillText(this.hint_Text[1], 30, 390);
+                        ctx.font = "14px Poppins";
+                        ctx.fillText(this.hint_Text[2], 30, 410);
+                    } else if (this.has_Sos == true && hasItem(7) && hasItem(8) && hasItem(9)) {
+                        ctx.font = "14px Poppins";
+                        ctx.fillText('Stay alive for the rescue.', 30, 390);
+                    } else {
+
+                        ctx.fillText('Find all members.', 30, 400);
+                    }
+
+
+                    ctx.font = "16px Poppins";
+                    if (hasItem(7)) {
+                        this.man_1.src = "image/todo/man1_dead.png";
+                        ctx.fillText("Dead", 290, 272);
+                    } else {
+                        ctx.fillText(this.man_1_con, 290, 272);
+                    }
+                    if (hasItem(8)) {
+                        this.man_2.src = "image/todo/man2_dead.png";
+                        ctx.fillText("Dead", 290, 332);
+                    } else {
+                        ctx.fillText(this.man_2_con, 290, 332);
+                    }
+                    if (hasItem(9)) {
+                        this.man_3.src = "image/todo/man3_dead.png";
+                        ctx.fillText("Dead", 290, 392);
+                    } else {
+                        ctx.fillText(this.man_3_con, 290, 392);
+                    }
+                    ctx.drawImage(this.man_1, 230, 240, 50, 50);
+                    ctx.drawImage(this.man_2, 230, 300, 50, 50);
+                    ctx.drawImage(this.man_3, 230, 360, 50, 50);
+
+                }
+                if (this.page == 2) {
+
+
+                    ctx.fillStyle = "black";
+                    ctx.font = "16px Poppins";
+                    if (hasItem(7) == false) {
+
+                        ctx.fillText(this.man_1_con, 70, 380);
+                    } else {
+                        this.man_1.src = "image/todo/man1_dead.png";
+                        ctx.fillText("Dead", 85, 380);
+                    }
+
+                    ctx.fillText('Name:', 220, 260);
+                    ctx.fillText('Lucas Rodriguez', 230, 285);
+                    ctx.fillText('Job:', 220, 310);
+                    ctx.fillText('Reseracher', 230, 335);
+                    ctx.fillText('Birth:', 220, 360);
+                    ctx.fillText('1990-07-14', 230, 385);
+                    ctx.drawImage(this.man_1, 55, 260);
+                }
+                if (this.page == 3) {
+
+                    ctx.fillStyle = "black";
+                    ctx.font = "16px Poppins";
+                    if (hasItem(8)) {
+                        this.man_2.src = "image/todo/man2_dead.png";
+                        ctx.fillText("Dead", 85, 380);
+                    } else
+                        ctx.fillText(this.man_2_con, 70, 380);
+                    ctx.fillText('Name:', 220, 260);
+                    ctx.fillText('William Thomas', 230, 285);
+                    ctx.fillText('Job:', 220, 310);
+                    ctx.fillText('Photographer', 230, 335);
+                    ctx.fillText('Birth:', 220, 360);
+                    ctx.fillText('1977-01-29', 230, 385);
+                    ctx.drawImage(this.man_2, 55, 260);
+                }
+                if (this.page == 4) {
+
+                    ctx.fillStyle = "black";
+                    ctx.font = "16px Poppins";
+                    if (hasItem(9)) {
+                        this.man_3.src = "image/todo/man3_dead.png";
+                        ctx.fillText("Dead", 85, 380);
+                    } else
+                        ctx.fillText(this.man_3_con, 70, 380);
+                    ctx.fillText('Name:', 220, 260);
+                    ctx.fillText('Ryan Richardson', 230, 285);
+                    ctx.fillText('Job:', 220, 310);
+                    ctx.fillText('Crew Leader', 230, 335);
+                    ctx.fillText('Birth:', 220, 360);
+                    ctx.fillText('1972-11-05', 230, 385);
+                    ctx.drawImage(this.man_3, 55, 260);
+                }
+                if (this.page == 5) {
+                    var sos = new Image();
+                    sos.src = "image/todo/sos.png";
+                    ctx.drawImage(sos, 30, 240, sos.width * 0.4, sos.height * 0.4);
+                    ctx.fillStyle = "black";
+                    ctx.font = "16px Poppins";
+                    ctx.fillText('Rock: ' + getItemQuantity(1) + ' / 50', 220, 260);
+                    ctx.fillText('Wooden Stick: ' + getItemQuantity(2) + ' / 50', 220, 280);
+                    if (getItemQuantity(1) > 49 && getItemQuantity(2) > 49 && this.has_Sos == false) {
+                        ctx.save();
+                        ctx.fillStyle = "darkRed";
+                        ctx.fillRect(271, 380, 50, 20);
+                        ctx.fillStyle = "white";
+                        ctx.fillText('Make', 275, 395);
+                        ctx.restore();
+                        if (dx > 271 && dx < 321 && dy > 380 && dy < 400)
+                            this.has_Sos = true;
+                    } else {
+                        ctx.save();
+                        ctx.fillStyle = "lightGrey";
+                        ctx.fillRect(271, 380, 50, 20);
+                        ctx.fillStyle = "white";
+                        ctx.fillText('Make', 275, 395);
+                        ctx.restore();
+                        ctx.save();
+                        ctx.font = "14px Poppins";
+                        ctx.fillStyle = "black";
+
+
+                        if (this.has_Sos == true) {
+                            ctx.fillText('You already bulit that', 215, 335);
+                        } else {
+                            ctx.fillText('You Don\'t have enough', 215, 335);
+                            ctx.fillText('material.', 215, 355);
+                        }
+                        ctx.restore();
+
+                    }
+                    if (x > 271 && x < 321 && y > 380 && y < 400) {
+                        canvas.style.cursor = "pointer";
+                    }
+                }
+
+            }
+
+
+        }
+    }
+
+    var end = {
+        draw: function() {
+            if (timer.day == 8 && guide.has_Sos && hasItem(7) && hasItem(8) && hasItem(9)) {
+                ui.bag_Click = false;
+                clickItem.current = clickItem.nothing;
+                sound.background.stop();
+                sound.end.run();
+                gameState.current = gameState.end;
+                ctx.fillStyle = "black";
+                ctx.fillRect(0, 0, 400, 600);
+                ctx.font = "20px Poppins";
+                ctx.fillStyle = "white";
+                ctx.textAlign = "center";
+                ctx.fillText('You escape frome the jungle', 200, 250);
+                ctx.font = "50px Poppins";
+
+                ctx.fillText('The end', 200, 310);
+
+                ctx.font = "20px Poppins";
+                ctx.fillText('Made by', 300, 530);
+                ctx.font = "15px 微軟正黑體";
+                ctx.fillText('鄧祖恩、游日銘', 300, 550);
+                if (sound.end.music.currentTime > 2) {
+                    sound.end_BGM.run();
+                }
+            }
+            if (timer.day == 8 && guide.has_Sos == false) {
+
+                clickItem.current = clickItem.nothing;
+                sound.background.stop();
+                gameState.current = gameState.end;
+                ctx.fillStyle = "black";
+                ctx.fillRect(0, 0, 400, 600);
+                ctx.font = "20px Poppins";
+                ctx.fillStyle = "white";
+                ctx.textAlign = "center";
+                ctx.fillText('Rescue team can\'t found you', 200, 250);
+                ctx.font = "50px Poppins";
+
+                ctx.fillText('Game Over', 200, 310);
+                ctx.font = "20px Poppins";
+                ctx.fillText('Made by', 300, 530);
+                ctx.font = "15px 微軟正黑體";
+                ctx.fillText('鄧祖恩、游日銘', 300, 550);
+
+            }
+        }
+    };
+
+    var Animate_Controller = {
+        draw: function() {
+            if (Animate.passport.start == true) {
+                Animate.passport.run();
+            }
+            if (Animate.info.start == true) {
+                Animate.info.run();
+            }
+        }
+    };
+
+    var backpack = {
+        draw: function() {
+            if (clickItem.current == clickItem.bag) {
+                ctx.textAlign = "left";
+                ctx.font = "30px Poppins";
+                ctx.fillStyle = "black";
+                ctx.drawImage(home.UI_Background, canvas.width / 2 - 150, canvas.height / 2 - 150);
+                ctx.fillText('Bag', canvas.width / 2 - 135, home.UI_Background.height - 210);
+                ctx.drawImage(home.xIcon, canvas.width / 2 + 105, canvas.height / 2 - 135, home.xIcon
+                    .width *
+                    0.6, home.xIcon.height * 0.6);
+                if (ui.check == false) {
+                    if (x > canvas.width / 2 + 105 && x < canvas.width / 2 + 105 + home.xIcon.width &&
+                        y >
+                        canvas.height / 2 - 135 && y < canvas.height / 2 - 135 + home.xIcon.height) {
+                        if (home.itemInfo == false) {
+                            ctx.drawImage(home.xIcon, canvas.width / 2 + 100, canvas.height / 2 - 142,
+                                home
+                                .xIcon.width * 0.8, home.xIcon.height * 0.8);
+                            canvas.style.cursor = "pointer";
+                        }
+
+                    }
+                    Inventory.draw();
+                    if (Inventory.items.length > 0) {
+                        ItemInfo.update();
+                    }
+                }
+            }
+        }
+    }
+
+    var sound = {
+        background: {
+            music: new Audio,
+            run: function() {
+                this.music.src = "sound/background.mp3";
+                this.music.loop = true;
+                this.music.play();
+            },
+            stop: function() {
+                this.music.pause();
+            }
+        },
+
+        flip_Book: function() {
+            var music = new Audio;
+            music.src = "sound/flipbook.mp3";
+            music.play();
+
+        },
+        open_Backpack: function() {
+            var music = new Audio;
+            music.src = "sound/backpack.mp3";
+            music.play();
+        },
+        fire_Cracking: {
+            music: new Audio,
+            run: function() {
+                this.music.src = "sound/burn.mp3";
+                this.music.loop = true;
+                this.music.play();
+
+            },
+            stop: function() {
+                this.music.pause();
+            }
+        },
+        rain: {
+            music: new Audio,
+            playSound: false,
+            run: function() {
+
+                if (this.playSound == false) {
+                    this.music.src = "sound/rain.mp3";
+                    this.music.loop = true;
+                    this.music.play();
+                }
+
+                this.playSound = true;
+            },
+            stop: function() {
+                this.music.pause();
+            }
+        },
+        eat: {
+            music: new Audio(),
+            run: function() {
+                this.music.src = "sound/eat.mp3";
+                this.music.play();
+            },
+            stop: function() {
+                this.music.pause();
+            }
+        },
+        drink: {
+            music: new Audio(),
+            run: function() {
+                this.music.src = "sound/drink.mp3";
+                this.music.play();
+            },
+            stop: function() {
+                this.music.pause();
+            }
+        },
+        end: {
+            music: new Audio(),
+            playSound: false,
+            run: function() {
+                if (this.playSound == false) {
+                    this.music.src = "sound/end.mp3";
+
+                    this.music.play();
+                }
+                this.playSound = true;
+            },
+            stop: function() {
+                this.music.pause();
+            }
+        },
+        end_BGM: {
+            music: new Audio(),
+            playSound: false,
+            run: function() {
+                if (this.playSound == false) {
+                    this.music.src = "sound/safe.mp3";
+
+                    this.music.play();
+                }
+                this.playSound = true;
+            },
+            stop: function() {
+                this.music.pause();
+            }
+        }
+    }
+
+    function timer_() {
+        bodyStatus.calculate();
+        if (eve == false) {
+            timer.min++;
+            if (timer.min >= 60) {
+                timer.hour++;
+                timer.min = 0;
+            }
+            if (timer.hour >= 24) {
+                timer.day++;
+                timer.hour = 0;
+            }
+
+        }
+
+    }
+
+    function loop() {
+        canvas.style.cursor = "default";
+        menu.draw();
+        sence.draw();
+        backpack.draw();
+        ui.draw();
+        weather.cal();
+        end.draw();
+        Animate_Controller.draw();
+
+        requestAnimationFrame(loop);
+    }
+
+    loop();
+    setInterval(save, 1000);
+
+</script>
+
+</html>
