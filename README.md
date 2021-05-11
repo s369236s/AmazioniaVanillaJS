@@ -4,6 +4,8 @@
 
 <h2>如何遊玩</h2>
 
+[雲端下載](https://s369236s.github.io/Amazionia/)
+
 ```
 下載後開啟index.html即可
 ```
