@@ -4,7 +4,7 @@
 
 <h2>如何遊玩</h2>
 
-[雲端下載](https://s369236s.github.io/Amazionia/)
+[雲端下載](https://drive.google.com/file/d/1A0RIywd29JHSISe_7S1pXXprurSu6cf0/view?usp=sharing)
 
 ```
 下載後開啟index.html即可
